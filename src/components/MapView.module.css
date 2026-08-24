@@ -24,6 +24,11 @@
   border-color: #4285f4;
 }
 
+/* 地名検索(Nominatim)のピンは、掲載データ・Google由来とも違う色にする */
+.searchMarker {
+  background: #333;
+}
+
 .popup {
   min-width: 160px;
 }

@@ -43,6 +43,17 @@ function buildGoogleIcon(place: GooglePlaceResult) {
   });
 }
 
+// 地名検索(Nominatim)で選んだ場所用の、掲載データとは見た目を変えたピン。
+function buildSearchIcon() {
+  const html = `<div class="${styles.marker} ${styles.searchMarker}"><span>📍</span></div>`;
+  return L.divIcon({
+    html,
+    className: "",
+    iconSize: undefined,
+    iconAnchor: [20, 14],
+  });
+}
+
 // リストでカードを選んだときに、地図をそのピンへ移動してポップアップを開くための補助コンポーネント。
 // react-leafletのMapContainerの外からは地図インスタンスを操作できないため、
 // useMap()で取得したインスタンスをここで直接操作する。
@@ -69,11 +80,25 @@ function FlyToFocusedPlace({
   return null;
 }
 
+// 地名検索(Nominatim)で選んだ地点へ地図を移動するだけの補助コンポーネント
+// (Google Placesのピンのようにポップアップを開く対象が無いのでシンプルにflyToのみ)。
+function FlyToSearchResult({ point }: { point?: { lat: number; lng: number } | null }) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (!point) return;
+    map.flyTo([point.lat, point.lng], Math.max(map.getZoom(), 13));
+  }, [point, map]);
+
+  return null;
+}
+
 type Props = {
   spots: Spot[];
   googlePlaces?: GooglePlaceResult[];
   focusPlace?: { id: string; lat: number; lng: number };
   onSelectGooglePlace?: (id: string) => void;
+  searchResult?: { lat: number; lng: number; label: string } | null;
 };
 
 export default function MapView({
@@ -81,6 +106,7 @@ export default function MapView({
   googlePlaces = [],
   focusPlace,
   onSelectGooglePlace,
+  searchResult,
 }: Props) {
   const { t, pick } = useLocale();
   const googleMarkerRefs = useRef<Record<string, L.Marker | null>>({});
@@ -99,6 +125,14 @@ export default function MapView({
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         <FlyToFocusedPlace focusPlace={focusPlace} markerRefs={googleMarkerRefs} />
+        <FlyToSearchResult point={searchResult} />
+        {searchResult && (
+          <Marker position={[searchResult.lat, searchResult.lng]} icon={buildSearchIcon()}>
+            <Popup className={styles.popup}>
+              <div className={styles.popupName}>{searchResult.label}</div>
+            </Popup>
+          </Marker>
+        )}
         {spots.map((spot) => {
           const name = pick(spot.name);
           return (
