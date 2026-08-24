@@ -16,3 +16,17 @@ export const RAKHINE_BOUNDS = {
   low: { lat: 17.5, lng: 92.0 },
   high: { lat: 21.2, lng: 94.6 },
 };
+
+// react-leafletの MapContainer / LocationPicker で共通して使う、
+// Leafletの[lat,lng]タプル形式に変換した値。
+export const RAKHINE_LATLNG_BOUNDS: [[number, number], [number, number]] = [
+  [RAKHINE_BOUNDS.low.lat, RAKHINE_BOUNDS.low.lng],
+  [RAKHINE_BOUNDS.high.lat, RAKHINE_BOUNDS.high.lng],
+];
+
+// パン(ドラッグ移動)できる範囲も、ラカイン州から大きく離れられないよう
+// 少し余裕を持たせた範囲に制限する。
+export const RAKHINE_MAX_PAN_BOUNDS: [[number, number], [number, number]] = [
+  [RAKHINE_BOUNDS.low.lat - 1.5, RAKHINE_BOUNDS.low.lng - 1.5],
+  [RAKHINE_BOUNDS.high.lat + 1.5, RAKHINE_BOUNDS.high.lng + 1.5],
+];
