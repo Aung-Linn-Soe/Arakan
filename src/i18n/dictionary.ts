@@ -31,6 +31,9 @@ export const dictionary: Record<Locale, Record<string, string>> = {
     openInGoogleMaps: "Google Map တွင် ဖွင့်ရန်",
     curatedHeading: "စာရင်းဝင် နေရာများ (နမူနာ)",
     descriptionHeading: "ဖော်ပြချက်",
+    wikipediaLoading: "Wikipedia တွင် ရှာဖွေနေသည်...",
+    wikipediaSource: "အသေးစိတ်ကို Wikipedia တွင် ဖတ်ပါ",
+    descriptionUnavailable: "ဖော်ပြချက် မရှိသေးပါ",
   },
   en: {
     appName: "Rakhine Explorer",
@@ -61,6 +64,9 @@ export const dictionary: Record<Locale, Record<string, string>> = {
     openInGoogleMaps: "Open in Google Maps",
     curatedHeading: "Listed spots (sample)",
     descriptionHeading: "Description",
+    wikipediaLoading: "Searching Wikipedia...",
+    wikipediaSource: "Read more on Wikipedia",
+    descriptionUnavailable: "No description available yet",
   },
   ja: {
     appName: "ラカイン旅々",
@@ -91,6 +97,9 @@ export const dictionary: Record<Locale, Record<string, string>> = {
     openInGoogleMaps: "Googleマップで開く",
     curatedHeading: "掲載スポット(サンプル)",
     descriptionHeading: "説明",
+    wikipediaLoading: "Wikipediaで検索中...",
+    wikipediaSource: "くわしくはWikipediaで読む",
+    descriptionUnavailable: "説明はまだありません",
   },
 };
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Category } from "@/types/spot";
+import { Category, Locale } from "@/types/spot";
 import { GooglePlaceResult } from "@/types/googlePlace";
 
 export type GooglePlacesState =
@@ -18,6 +18,7 @@ export function useGooglePlaces(
   category: Category,
   query: string,
   enabled: boolean,
+  locale: Locale,
 ): GooglePlacesState {
   const [state, setState] = useState<GooglePlacesState>({ status: "idle" });
 
@@ -32,7 +33,7 @@ export function useGooglePlaces(
     const controller = new AbortController();
     setState({ status: "loading" });
 
-    const params = new URLSearchParams({ category });
+    const params = new URLSearchParams({ category, lang: locale });
     if (query.trim()) params.set("q", query.trim());
 
     fetch(`/api/spots?${params.toString()}`, { signal: controller.signal })
@@ -50,7 +51,7 @@ export function useGooglePlaces(
       });
 
     return () => controller.abort();
-  }, [category, query, enabled]);
+  }, [category, query, enabled, locale]);
 
   return state;
 }

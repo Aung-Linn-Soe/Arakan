@@ -21,7 +21,7 @@ const MapView = dynamic(() => import("@/components/MapView"), {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        height: "42vh",
+        height: "70vh",
         borderRadius: "var(--radius-lg)",
         background: "var(--color-surface)",
         color: "var(--color-text-muted)",
@@ -47,7 +47,7 @@ export default function HomePage() {
   // fetchはここで1回だけ行い、カード一覧(GooglePlacesSection)と
   // 地図のピン(MapView)の両方で同じ結果を使う(呼び出しを増やすと課金対象のAPI
   // リクエストが増えてしまうため)。
-  const googleState = useGooglePlaces(category, query, ENABLE_GOOGLE_PLACES);
+  const googleState = useGooglePlaces(category, query, ENABLE_GOOGLE_PLACES, locale);
 
   const googlePlacesForMap = useMemo(() => {
     if (googleState.status !== "ready") return [];
