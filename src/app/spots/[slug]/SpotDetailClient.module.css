@@ -1,0 +1,115 @@
+.wrap {
+  padding-bottom: 24px;
+}
+
+.backLink {
+  display: inline-block;
+  padding: 12px 16px 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.photo {
+  margin: 12px 16px;
+  height: 220px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.header {
+  padding: 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.categoryRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+
+.name {
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.metaRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+
+.section {
+  margin: 18px 16px 0;
+}
+
+.sectionTitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 6px;
+}
+
+.description {
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.card {
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  margin: 18px 16px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  gap: 12px;
+}
+
+.rowLabel {
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+
+.rowValue {
+  text-align: right;
+}
+
+.mapLink {
+  display: inline-block;
+  margin: 18px 16px 0;
+  padding: 12px 18px;
+  border-radius: 999px;
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
+  font-weight: 700;
+  font-size: 14px;
+  text-align: center;
+}
+
+.freshness {
+  margin: 14px 16px 0;
+  font-size: 12px;
+  color: var(--color-text-muted);
+}

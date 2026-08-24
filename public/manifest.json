@@ -1,0 +1,17 @@
+{
+  "name": "ラカイン旅々 | Rakhine Explorer",
+  "short_name": "ラカイン旅々",
+  "description": "ラカイン州(ミャンマー)の観光スポットをカテゴリー別に探せるカタログアプリ",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f3e6ce",
+  "theme_color": "#c1652e",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

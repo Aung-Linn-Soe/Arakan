@@ -1,0 +1,97 @@
+:root {
+  /* ベースパレット(モックアップのウォームベージュ×テラコッタ) */
+  --color-bg: #f3e6ce;
+  --color-surface: #eaddc0;
+  --color-surface-raised: #f8eeda;
+  --color-border: #d9c8a4;
+  --color-text: #2b2013;
+  --color-text-muted: #6b5d43;
+  --color-primary: #c1652e;
+  --color-primary-contrast: #fff8ec;
+
+  /* カテゴリー別アクセントカラー */
+  --color-temple: #7b4b32;
+  --color-coast: #4b6b4a;
+  --color-food: #c1652e;
+  --color-craft: #3e6b6b;
+
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+  --shadow-card: 0 2px 6px rgba(43, 32, 19, 0.12);
+
+  --font-sans: "Myanmar Text", "Noto Sans Myanmar", "Padauk", system-ui,
+    -apple-system, "Segoe UI", "Hiragino Kaku Gothic ProN", "Yu Gothic",
+    "Noto Sans JP", sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #201a12;
+    --color-surface: #2b2317;
+    --color-surface-raised: #34291a;
+    --color-border: #4a3c26;
+    --color-text: #f3e6ce;
+    --color-text-muted: #c9b98f;
+    --color-primary: #e08a4f;
+    --color-primary-contrast: #201a12;
+    color-scheme: dark;
+  }
+}
+
+html {
+  height: 100%;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+body {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  color: var(--color-text);
+  background: var(--color-bg);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+input {
+  font-family: inherit;
+}
+
+#app-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  flex: 1;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
