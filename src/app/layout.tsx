@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { LocaleProvider } from "@/i18n/LocaleContext";
+import { AuthProvider } from "@/i18n/AuthContext";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
@@ -22,11 +23,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="my">
       <body>
         <LocaleProvider>
-          <div id="app-shell">
-            <Header />
-            <main style={{ flex: 1 }}>{children}</main>
-            <Footer />
-          </div>
+          <AuthProvider>
+            <div id="app-shell">
+              <Header />
+              <main style={{ flex: 1 }}>{children}</main>
+              <Footer />
+            </div>
+          </AuthProvider>
         </LocaleProvider>
         <ServiceWorkerRegister />
       </body>

@@ -1,6 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { useLocale } from "@/i18n/LocaleContext";
+import { useAuth } from "@/i18n/AuthContext";
 import { Locale } from "@/types/spot";
 import styles from "./Header.module.css";
 
@@ -12,6 +14,7 @@ const LOCALES: { code: Locale; label: string }[] = [
 
 export default function Header() {
   const { locale, setLocale, t } = useLocale();
+  const { user, loading, signOut } = useAuth();
 
   return (
     <header className={styles.header}>
@@ -33,6 +36,29 @@ export default function Header() {
             {label}
           </button>
         ))}
+      </div>
+      <div className={styles.authArea}>
+        <Link href="/dishes" className={styles.authLink}>
+          {t("dishesPageTitle")}
+        </Link>
+        {!loading && (
+          <>
+            {user ? (
+              <>
+                <Link href="/post" className={styles.authLink}>
+                  {t("newPost")}
+                </Link>
+                <button type="button" className={styles.authLink} onClick={() => signOut()}>
+                  {t("logout")}
+                </button>
+              </>
+            ) : (
+              <Link href="/login" className={styles.authLink}>
+                {t("login")}
+              </Link>
+            )}
+          </>
+        )}
       </div>
     </header>
   );
