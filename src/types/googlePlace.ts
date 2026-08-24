@@ -14,6 +14,12 @@ export type GooglePlacesTextSearchResponse = {
     regularOpeningHours?: { weekdayDescriptions?: string[] };
     editorialSummary?: { text: string };
     googleMapsUri?: string;
+    addressComponents?: Array<{
+      longText?: string;
+      shortText?: string;
+      types?: string[];
+    }>;
+    types?: string[];
   }>;
 };
 

@@ -1,11 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { CATEGORIES, Category } from "@/types/spot";
 import { GooglePlacesTextSearchResponse, GooglePlaceResult } from "@/types/googlePlace";
-import {
-  categorySearchQuery,
-  RAKHINE_CENTER,
-  RAKHINE_SEARCH_RADIUS_M,
-} from "@/lib/googlePlacesQuery";
+import { categorySearchQuery, RAKHINE_BOUNDS } from "@/lib/googlePlacesQuery";
 
 // Google Places APIの再取得までのキャッシュ期間(秒)。
 // コスト抑制と、Google利用規約が求める定期的な再取得の両立のため24時間に設定。
@@ -46,15 +42,15 @@ export async function GET(request: NextRequest) {
         "Content-Type": "application/json",
         "X-Goog-Api-Key": apiKey,
         "X-Goog-FieldMask":
-          "places.id,places.displayName,places.formattedAddress,places.location,places.rating,places.userRatingCount,places.photos,places.regularOpeningHours,places.editorialSummary,places.googleMapsUri",
+          "places.id,places.displayName,places.formattedAddress,places.location,places.rating,places.userRatingCount,places.photos,places.regularOpeningHours,places.editorialSummary,places.googleMapsUri,places.addressComponents,places.types",
       },
       body: JSON.stringify({
         textQuery,
         languageCode: "en",
-        locationBias: {
-          circle: {
-            center: { latitude: RAKHINE_CENTER.lat, longitude: RAKHINE_CENTER.lng },
-            radius: RAKHINE_SEARCH_RADIUS_M,
+        locationRestriction: {
+          rectangle: {
+            low: { latitude: RAKHINE_BOUNDS.low.lat, longitude: RAKHINE_BOUNDS.low.lng },
+            high: { latitude: RAKHINE_BOUNDS.high.lat, longitude: RAKHINE_BOUNDS.high.lng },
           },
         },
       }),
@@ -77,22 +73,48 @@ export async function GET(request: NextRequest) {
 
   const data: GooglePlacesTextSearchResponse = await upstream.json();
 
-  const results: GooglePlaceResult[] = (data.places ?? []).map((place) => ({
-    id: place.id,
-    category: categoryParam,
-    name: place.displayName?.text ?? "",
-    formattedAddress: place.formattedAddress,
-    lat: place.location?.latitude ?? 0,
-    lng: place.location?.longitude ?? 0,
-    rating: place.rating,
-    userRatingCount: place.userRatingCount,
-    photoUrl: place.photos?.[0]
-      ? `/api/places/photo?name=${encodeURIComponent(place.photos[0].name)}`
-      : undefined,
-    openingHours: place.regularOpeningHours?.weekdayDescriptions,
-    summary: place.editorialSummary?.text,
-    mapsUri: place.googleMapsUri,
-  }));
+  // 州(admin area level 1)がRakhine Stateであるものだけに絞り込む。
+  // locationRestrictionの矩形はRakhine州の複雑な形状を厳密には表せず、
+  // 山脈を挟んだ隣接州(Magwayなど)まで含まれてしまうことがあるため、
+  // Googleが返す行政区分データで最終的に判定する。
+  const isInRakhineState = (
+    place: NonNullable<GooglePlacesTextSearchResponse["places"]>[number],
+  ) =>
+    (place.addressComponents ?? []).some(
+      (c) =>
+        c.types?.includes("administrative_area_level_1") &&
+        /rakhine/i.test(c.longText ?? c.shortText ?? ""),
+    );
+
+  // テキスト検索は「関連性が高い」場所を返すだけなので、カテゴリーと無関係な
+  // 施設タイプ(例: Coast & Natureの検索結果に寺院が混ざる)が紛れ込むことがある。
+  // カテゴリーごとに明らかに不適切なタイプだけを除外する。
+  const EXCLUDED_TYPES_BY_CATEGORY: Partial<Record<Category, string[]>> = {
+    coast: ["place_of_worship", "hindu_temple", "buddhist_temple", "church", "mosque", "synagogue"],
+  };
+  const excludedTypes = EXCLUDED_TYPES_BY_CATEGORY[categoryParam] ?? [];
+  const isExcludedType = (
+    place: NonNullable<GooglePlacesTextSearchResponse["places"]>[number],
+  ) => (place.types ?? []).some((type) => excludedTypes.includes(type));
+
+  const results: GooglePlaceResult[] = (data.places ?? [])
+    .filter((place) => isInRakhineState(place) && !isExcludedType(place))
+    .map((place) => ({
+      id: place.id,
+      category: categoryParam,
+      name: place.displayName?.text ?? "",
+      formattedAddress: place.formattedAddress,
+      lat: place.location?.latitude ?? 0,
+      lng: place.location?.longitude ?? 0,
+      rating: place.rating,
+      userRatingCount: place.userRatingCount,
+      photoUrl: place.photos?.[0]
+        ? `/api/places/photo?name=${encodeURIComponent(place.photos[0].name)}`
+        : undefined,
+      openingHours: place.regularOpeningHours?.weekdayDescriptions,
+      summary: place.editorialSummary?.text,
+      mapsUri: place.googleMapsUri,
+    }));
 
   return NextResponse.json({ results });
 }

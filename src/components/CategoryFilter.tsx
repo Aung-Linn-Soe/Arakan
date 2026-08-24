@@ -7,25 +7,15 @@ import { CATEGORIES, Category } from "@/types/spot";
 import styles from "./CategoryFilter.module.css";
 
 type Props = {
-  value: Category | "all";
-  onChange: (value: Category | "all") => void;
+  value: Category;
+  onChange: (value: Category) => void;
 };
 
 export default function CategoryFilter({ value, onChange }: Props) {
   const { t } = useLocale();
 
   return (
-    <div className={styles.wrap} role="tablist" aria-label={t("categoryAll")}>
-      <button
-        type="button"
-        role="tab"
-        aria-selected={value === "all"}
-        className={`${styles.pill} ${value === "all" ? styles.active : ""}`}
-        onClick={() => onChange("all")}
-      >
-        <span className={styles.dot} style={{ background: "currentColor" }} />
-        {t("categoryAll")}
-      </button>
+    <div className={styles.wrap} role="tablist" aria-label={t("categoryFilterLabel")}>
       {CATEGORIES.map((category) => (
         <button
           key={category}

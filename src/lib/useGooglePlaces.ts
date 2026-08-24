@@ -15,15 +15,15 @@ export type GooglePlacesState =
 // ページ側で1回だけ呼び出し、地図とカード一覧の両方に結果を渡して使うこと
 // (呼び出し箇所を増やすとその分Google Places APIへのリクエストが増えてしまう)。
 export function useGooglePlaces(
-  category: Category | "all",
+  category: Category,
   query: string,
   enabled: boolean,
 ): GooglePlacesState {
   const [state, setState] = useState<GooglePlacesState>({ status: "idle" });
 
   useEffect(() => {
-    if (!enabled || category === "all") {
-      // 無効化 or "all"への切り替え時に前回のfetch結果を破棄する(外部リクエストとの同期)
+    if (!enabled) {
+      // 無効化時に前回のfetch結果を破棄する(外部リクエストとの同期)
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setState({ status: "idle" });
       return;
