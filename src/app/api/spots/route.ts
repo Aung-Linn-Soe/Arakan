@@ -22,6 +22,10 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const categoryParam = searchParams.get("category") as Category | null;
   const q = searchParams.get("q")?.trim();
+  const langParam = searchParams.get("lang");
+  // UIの表示言語(my/en/ja)をそのままGoogle Places側の応答言語にする。
+  // 未対応の値が来た場合は英語にフォールバック。
+  const languageCode = langParam === "my" || langParam === "ja" ? langParam : "en";
 
   if (!categoryParam || !CATEGORIES.includes(categoryParam)) {
     return NextResponse.json(
@@ -46,7 +50,7 @@ export async function GET(request: NextRequest) {
       },
       body: JSON.stringify({
         textQuery,
-        languageCode: "en",
+        languageCode,
         locationRestriction: {
           rectangle: {
             low: { latitude: RAKHINE_BOUNDS.low.lat, longitude: RAKHINE_BOUNDS.low.lng },
@@ -77,14 +81,17 @@ export async function GET(request: NextRequest) {
   // locationRestrictionの矩形はRakhine州の複雑な形状を厳密には表せず、
   // 山脈を挟んだ隣接州(Magwayなど)まで含まれてしまうことがあるため、
   // Googleが返す行政区分データで最終的に判定する。
+  // languageCodeによって州名の表記が変わる(英語: "Rakhine", ミャンマー語: "ရခိုင်...",
+  // 日本語: "ラカイン" など)ため、どの表記でも判定できるようにする。
+  const RAKHINE_NAME_PATTERNS = [/rakhine/i, /ရခိုင်/, /ラカイン/];
   const isInRakhineState = (
     place: NonNullable<GooglePlacesTextSearchResponse["places"]>[number],
   ) =>
-    (place.addressComponents ?? []).some(
-      (c) =>
-        c.types?.includes("administrative_area_level_1") &&
-        /rakhine/i.test(c.longText ?? c.shortText ?? ""),
-    );
+    (place.addressComponents ?? []).some((c) => {
+      if (!c.types?.includes("administrative_area_level_1")) return false;
+      const text = c.longText ?? c.shortText ?? "";
+      return RAKHINE_NAME_PATTERNS.some((pattern) => pattern.test(text));
+    });
 
   // テキスト検索は「関連性が高い」場所を返すだけなので、カテゴリーと無関係な
   // 施設タイプ(例: Coast & Natureの検索結果に寺院が混ざる)が紛れ込むことがある。

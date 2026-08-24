@@ -24,11 +24,6 @@ export default function GooglePlacesSection({ category, state, selectedId, onSel
 
   return (
     <div className={styles.section}>
-      <div className={styles.heading}>
-        <span className={styles.headingTitle}>{t("googleResultsHeading")}</span>
-        <span className={styles.attribution}>{t("googleAttribution")}</span>
-      </div>
-
       {state.status === "loading" && <p className={styles.status}>{t("googleLoading")}</p>}
 
       {state.status === "error" && <p className={styles.status}>⚠ {t("googleError")}: {state.message}</p>}
@@ -62,14 +57,6 @@ export default function GooglePlacesSection({ category, state, selectedId, onSel
             </div>
             <div className={styles.body}>
               <div className={styles.name}>{place.name}</div>
-              <div className={styles.metaRow}>
-                {place.rating != null && (
-                  <span style={{ color: "var(--color-primary)", fontWeight: 600 }}>
-                    ★ {place.rating.toFixed(1)}
-                    {place.userRatingCount != null ? ` (${place.userRatingCount})` : ""}
-                  </span>
-                )}
-              </div>
               {place.formattedAddress && (
                 <p className={styles.address}>{place.summary || place.formattedAddress}</p>
               )}

@@ -50,9 +50,21 @@
 }
 
 .mapsLink {
-  display: inline-block;
-  margin-top: 8px;
+  display: block;
+  width: fit-content;
+  margin-top: 10px;
   font-size: 13px;
   font-weight: 700;
   color: var(--color-primary);
+}
+
+.wikiSource {
+  display: block;
+  width: fit-content;
+  margin-top: 6px;
+  margin-bottom: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  /* Wikipediaの標準的なリンク色に合わせて、出典であることが分かりやすいように */
+  color: #3366cc;
 }

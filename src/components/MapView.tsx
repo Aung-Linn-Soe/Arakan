@@ -9,11 +9,20 @@ import { useLocale } from "@/i18n/LocaleContext";
 import { categoryColorVar, categoryIcon } from "@/lib/categoryMeta";
 import { Spot } from "@/types/spot";
 import { GooglePlaceResult } from "@/types/googlePlace";
+import { RAKHINE_BOUNDS } from "@/lib/googlePlacesQuery";
 import styles from "./MapView.module.css";
 
-// ラカイン州のおおよその中心座標
-const DEFAULT_CENTER: [number, number] = [19.9, 93.4];
-const DEFAULT_ZOOM = 8;
+// 初期表示はラカイン州のバウンディングボックスにフィットさせる。
+const RAKHINE_LATLNG_BOUNDS: [[number, number], [number, number]] = [
+  [RAKHINE_BOUNDS.low.lat, RAKHINE_BOUNDS.low.lng],
+  [RAKHINE_BOUNDS.high.lat, RAKHINE_BOUNDS.high.lng],
+];
+// パン(ドラッグ移動)できる範囲も、ラカイン州から大きく離れられないよう
+// 少し余裕を持たせた範囲に制限する。
+const MAX_PAN_BOUNDS: [[number, number], [number, number]] = [
+  [RAKHINE_BOUNDS.low.lat - 1.5, RAKHINE_BOUNDS.low.lng - 1.5],
+  [RAKHINE_BOUNDS.high.lat + 1.5, RAKHINE_BOUNDS.high.lng + 1.5],
+];
 
 function buildSpotIcon(spot: Spot) {
   const html = `
@@ -91,8 +100,9 @@ export default function MapView({
   return (
     <div className={styles.mapWrap}>
       <MapContainer
-        center={DEFAULT_CENTER}
-        zoom={DEFAULT_ZOOM}
+        bounds={RAKHINE_LATLNG_BOUNDS}
+        maxBounds={MAX_PAN_BOUNDS}
+        maxBoundsViscosity={1.0}
         style={{ width: "100%", height: "100%" }}
         scrollWheelZoom
       >
