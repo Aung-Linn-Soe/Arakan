@@ -1,9 +1,8 @@
 .mapWrap {
-  width: calc(100% - 32px);
+  width: 100%;
   height: clamp(280px, 42vh, 420px);
   border-radius: var(--radius-lg);
   overflow: hidden;
-  margin: 0 16px 16px;
 }
 
 .marker {

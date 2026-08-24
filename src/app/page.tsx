@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import { spots } from "@/data/spots";
 import { useLocale } from "@/i18n/LocaleContext";
@@ -9,9 +9,8 @@ import { useGooglePlaces } from "@/lib/useGooglePlaces";
 import { dedupeGooglePlaces } from "@/lib/dedupeGooglePlaces";
 import SearchBox from "@/components/SearchBox";
 import CategoryFilter from "@/components/CategoryFilter";
-import SpotCard from "@/components/SpotCard";
 import GooglePlacesSection from "@/components/GooglePlacesSection";
-import googleSectionStyles from "@/components/GooglePlacesSection.module.css";
+import SelectedPlaceDetail from "@/components/SelectedPlaceDetail";
 import styles from "./page.module.css";
 
 const MapView = dynamic(() => import("@/components/MapView"), {
@@ -23,7 +22,6 @@ const MapView = dynamic(() => import("@/components/MapView"), {
         alignItems: "center",
         justifyContent: "center",
         height: "42vh",
-        margin: "0 16px 16px",
         borderRadius: "var(--radius-lg)",
         background: "var(--color-surface)",
         color: "var(--color-text-muted)",
@@ -56,29 +54,45 @@ export default function HomePage() {
     return dedupeGooglePlaces(filtered, googleState.results);
   }, [googleState, filtered]);
 
+  // カード or 地図のピンで選ばれたGoogle Placesのスポット(どちらからでも選べるよう共通のstateにする)
+  const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
+  const selectedPlace =
+    googleState.status === "ready"
+      ? googleState.results.find((p) => p.id === selectedPlaceId)
+      : undefined;
+
   return (
     <div>
       <SearchBox value={query} onChange={setQuery} />
       <CategoryFilter value={category} onChange={setCategory} />
 
-      {ENABLE_GOOGLE_PLACES && <GooglePlacesSection category={category} state={googleState} />}
+      <div className={styles.mapSection}>
+        <div className={styles.mapCol}>
+          <MapView
+            spots={filtered}
+            googlePlaces={googlePlacesForMap}
+            focusPlace={selectedPlace}
+            onSelectGooglePlace={setSelectedPlaceId}
+          />
+        </div>
+        {ENABLE_GOOGLE_PLACES && (
+          <div className={styles.listCol}>
+            <GooglePlacesSection
+              category={category}
+              state={googleState}
+              selectedId={selectedPlaceId}
+              onSelect={setSelectedPlaceId}
+            />
+          </div>
+        )}
+      </div>
 
-      {ENABLE_GOOGLE_PLACES && category !== "all" && (
-        <div className={googleSectionStyles.sectionDivider}>{t("curatedHeading")}</div>
-      )}
+      {selectedPlace && <SelectedPlaceDetail place={selectedPlace} />}
 
-      <MapView spots={filtered} googlePlaces={googlePlacesForMap} />
-
-      {filtered.length === 0 ? (
+      {filtered.length === 0 && (
         <p style={{ textAlign: "center", color: "var(--color-text-muted)", padding: 24 }}>
           {t("noResults")}
         </p>
-      ) : (
-        <div className={styles.grid}>
-          {filtered.map((spot) => (
-            <SpotCard key={spot.id} spot={spot} />
-          ))}
-        </div>
       )}
     </div>
   );

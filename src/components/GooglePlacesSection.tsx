@@ -7,17 +7,20 @@ import { Category } from "@/types/spot";
 import styles from "./GooglePlacesSection.module.css";
 
 type Props = {
-  category: Category | "all";
+  category: Category;
   state: GooglePlacesState;
+  selectedId?: string | null;
+  onSelect?: (id: string) => void;
 };
 
 // カテゴリー選択時のGoogle Places検索結果をカードで表示するセクション。
 // fetch自体はページ側で1回だけ行い(地図のピンとも共有するため)、
 // このコンポーネントは結果を受け取って表示するだけの見た目担当。
-export default function GooglePlacesSection({ category, state }: Props) {
+// カードをクリックすると地図側のピンと連動する(onSelect)。
+export default function GooglePlacesSection({ category, state, selectedId, onSelect }: Props) {
   const { t } = useLocale();
 
-  if (category === "all" || state.status === "idle") return null;
+  if (state.status === "idle") return null;
 
   return (
     <div className={styles.section}>
@@ -36,7 +39,19 @@ export default function GooglePlacesSection({ category, state }: Props) {
 
       {state.status === "ready" &&
         state.results.map((place) => (
-          <div key={place.id} className={styles.card}>
+          <div
+            key={place.id}
+            className={`${styles.card} ${selectedId === place.id ? styles.cardActive : ""}`}
+            role="button"
+            tabIndex={0}
+            onClick={() => onSelect?.(place.id)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                onSelect?.(place.id);
+              }
+            }}
+          >
             <div className={styles.photoWrap}>
               {place.photoUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element

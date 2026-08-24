@@ -1,6 +1,7 @@
 "use client";
 
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { useEffect, useRef } from "react";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import Link from "next/link";
@@ -45,13 +46,47 @@ function buildGoogleIcon(place: GooglePlaceResult) {
   });
 }
 
+// リストでカードを選んだときに、地図をそのピンへ移動してポップアップを開くための補助コンポーネント。
+// react-leafletのMapContainerの外からは地図インスタンスを操作できないため、
+// useMap()で取得したインスタンスをここで直接操作する。
+function FlyToFocusedPlace({
+  focusPlace,
+  markerRefs,
+}: {
+  focusPlace?: { id: string; lat: number; lng: number };
+  markerRefs: React.RefObject<Record<string, L.Marker | null>>;
+}) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (!focusPlace) return;
+    map.flyTo([focusPlace.lat, focusPlace.lng], Math.max(map.getZoom(), 13));
+    // 地図の移動が終わってからポップアップを開く(移動中に開くと位置がずれる)
+    const openPopup = () => markerRefs.current[focusPlace.id]?.openPopup();
+    map.once("moveend", openPopup);
+    return () => {
+      map.off("moveend", openPopup);
+    };
+  }, [focusPlace, map, markerRefs]);
+
+  return null;
+}
+
 type Props = {
   spots: Spot[];
   googlePlaces?: GooglePlaceResult[];
+  focusPlace?: { id: string; lat: number; lng: number };
+  onSelectGooglePlace?: (id: string) => void;
 };
 
-export default function MapView({ spots, googlePlaces = [] }: Props) {
+export default function MapView({
+  spots,
+  googlePlaces = [],
+  focusPlace,
+  onSelectGooglePlace,
+}: Props) {
   const { t, pick } = useLocale();
+  const googleMarkerRefs = useRef<Record<string, L.Marker | null>>({});
 
   return (
     <div className={styles.mapWrap}>
@@ -65,6 +100,7 @@ export default function MapView({ spots, googlePlaces = [] }: Props) {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+        <FlyToFocusedPlace focusPlace={focusPlace} markerRefs={googleMarkerRefs} />
         {spots.map((spot) => {
           const name = pick(spot.name);
           return (
@@ -89,6 +125,12 @@ export default function MapView({ spots, googlePlaces = [] }: Props) {
             key={`g-${place.id}`}
             position={[place.lat, place.lng]}
             icon={buildGoogleIcon(place)}
+            ref={(instance) => {
+              googleMarkerRefs.current[place.id] = instance;
+            }}
+            eventHandlers={{
+              click: () => onSelectGooglePlace?.(place.id),
+            }}
           >
             <Popup className={styles.popup}>
               <div className={styles.popupName}>{place.name}</div>
