@@ -7,6 +7,7 @@ import { useLocale } from "@/i18n/LocaleContext";
 import { useFilteredSpots } from "@/lib/useFilteredSpots";
 import { useGooglePlaces } from "@/lib/useGooglePlaces";
 import { dedupeGooglePlaces } from "@/lib/dedupeGooglePlaces";
+import { GeocodeResult } from "@/lib/useGeocodeSearch";
 import SearchBox from "@/components/SearchBox";
 import CategoryFilter from "@/components/CategoryFilter";
 import GooglePlacesSection from "@/components/GooglePlacesSection";
@@ -49,21 +50,32 @@ export default function HomePage() {
   // リクエストが増えてしまうため)。
   const googleState = useGooglePlaces(category, query, ENABLE_GOOGLE_PLACES, locale);
 
-  const googlePlacesForMap = useMemo(() => {
-    if (googleState.status !== "ready") return [];
-    return dedupeGooglePlaces(filtered, googleState.results);
-  }, [googleState, filtered]);
-
   // カード or 地図のピンで選ばれたGoogle Placesのスポット(どちらからでも選べるよう共通のstateにする)
   const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
+  // 検索バーで地名検索(Nominatim)を選んだ結果。掲載データとは別に地図上に表示する。
+  const [searchResult, setSearchResult] = useState<GeocodeResult | null>(null);
   const selectedPlace =
     googleState.status === "ready"
       ? googleState.results.find((p) => p.id === selectedPlaceId)
       : undefined;
 
+  // 地図にピンを出すのは、①検索結果がちょうど1件に絞られたとき、②リストで
+  // 選んだ1件、のいずれか。横のリストは(検索が空でも)常に該当件数を表示するが、
+  // 地図は同じ場所に何件も重なって見づらくなるのを避けるため、それ以外は出さない。
+  const googlePlacesForMap = useMemo(() => {
+    if (googleState.status !== "ready") return [];
+    const toShow =
+      googleState.results.length === 1
+        ? googleState.results
+        : selectedPlace
+          ? [selectedPlace]
+          : [];
+    return dedupeGooglePlaces(filtered, toShow);
+  }, [googleState, filtered, selectedPlace]);
+
   return (
     <div>
-      <SearchBox value={query} onChange={setQuery} />
+      <SearchBox value={query} onChange={setQuery} onSelectPlace={setSearchResult} />
       <CategoryFilter value={category} onChange={setCategory} />
 
       <div className={styles.mapSection}>
@@ -73,6 +85,7 @@ export default function HomePage() {
             googlePlaces={googlePlacesForMap}
             focusPlace={selectedPlace}
             onSelectGooglePlace={setSelectedPlaceId}
+            searchResult={searchResult}
           />
         </div>
         {ENABLE_GOOGLE_PLACES && (

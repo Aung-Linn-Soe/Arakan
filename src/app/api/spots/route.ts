@@ -121,7 +121,15 @@ export async function GET(request: NextRequest) {
       openingHours: place.regularOpeningHours?.weekdayDescriptions,
       summary: place.editorialSummary?.text,
       mapsUri: place.googleMapsUri,
-    }));
+    }))
+    // Text Searchは「関連性」で返すだけなので、名前で検索してもクエリと無関係な
+    // 同カテゴリーの場所(周辺の別の寺院など)が混ざって返ってくることがある。
+    // 検索語が入っている場合は、名前か住所に検索語を含むものだけに確実に絞り込む。
+    .filter((place) => {
+      if (!q) return true;
+      const target = `${place.name} ${place.formattedAddress ?? ""}`.toLowerCase();
+      return target.includes(q.toLowerCase());
+    });
 
   return NextResponse.json({ results });
 }

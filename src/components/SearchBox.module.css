@@ -1,5 +1,39 @@
 .wrap {
+  position: relative;
   padding: 0 16px 8px;
+}
+
+.suggestions {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  top: 100%;
+  z-index: 30;
+  margin-top: 2px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.suggestionItem {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 10px 14px;
+  font-size: 13px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.suggestionItem:last-child {
+  border-bottom: none;
+}
+
+.suggestionItem:hover {
+  background: var(--color-surface-raised);
 }
 
 .input {

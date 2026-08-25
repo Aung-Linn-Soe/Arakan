@@ -18,12 +18,12 @@ export default function Header() {
 
   return (
     <header className={styles.header}>
-      <div className={styles.brand}>
+      <Link href="/" className={styles.brand}>
         <div className={styles.logo} aria-hidden="true">
           R
         </div>
         <span className={styles.title}>{t("appName")}</span>
-      </div>
+      </Link>
       <div className={styles.langSwitch} role="group" aria-label={t("languageLabel")}>
         {LOCALES.map(({ code, label }) => (
           <button
