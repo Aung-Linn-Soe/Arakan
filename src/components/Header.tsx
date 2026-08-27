@@ -38,9 +38,8 @@ export default function Header() {
         ))}
       </div>
       <div className={styles.authArea}>
-        <Link href="/dishes" className={styles.authLink}>
-          {t("dishesPageTitle")}
-        </Link>
+        {/* 「Rakhine dishes」の独立ページは廃止し、ホーム画面のFoodタブに統合した
+            (料理そのものの紹介はそこで見られる)。 */}
         {!loading && (
           <>
             {user ? (

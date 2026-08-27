@@ -81,6 +81,7 @@ export default function DishList() {
 
       {dishes.length === 0 && <p className={styles.empty}>{t("dishesEmpty")}</p>}
 
+      <div className={styles.grid}>
       {dishes.map((dish) => {
         const shopState = shopStateByDish[dish.id] ?? { status: "idle" };
 
@@ -101,7 +102,7 @@ export default function DishList() {
 
         return (
           <div key={dish.id} className={styles.card}>
-            {dish.image_urls && dish.image_urls.length > 0 && (
+            {dish.image_urls && dish.image_urls.length > 0 ? (
               <div
                 className={styles.photoHero}
                 onClick={() => setLightbox({ dishId: dish.id, index: 0 })}
@@ -111,6 +112,12 @@ export default function DishList() {
                 {dish.image_urls.length > 1 && (
                   <span className={styles.photoCount}>📷 {dish.image_urls.length}</span>
                 )}
+              </div>
+            ) : (
+              // 写真が無い投稿も、他のカードと並んだときに寂しく見えないよう
+              // プレースホルダーで同じ高さの「写真枠」を保つ。
+              <div className={styles.photoPlaceholder} aria-hidden="true">
+                🍜
               </div>
             )}
             <div className={styles.body}>
@@ -176,6 +183,7 @@ export default function DishList() {
           </div>
         );
       })}
+      </div>
 
       {lightbox && lightboxDish?.image_urls && (
         <PhotoLightbox
