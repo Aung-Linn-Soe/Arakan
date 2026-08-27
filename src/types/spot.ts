@@ -24,6 +24,10 @@ export type Spot = {
   };
   description: LocalizedText;
   photos: string[]; // 画像URL(空配列の場合はカテゴリ別プレースホルダーを表示)
+  // 目視確認済みのWikipedia記事タイトル(英語版)。指定されていれば、その記事の
+  // サムネイル画像をこのスポット固有の写真として表示する。未指定/記事に写真が
+  // 無い場合はカテゴリ別プレースホルダーにフォールバックする。
+  wikipediaTitle?: string;
   rating?: number;
   openingHours?: string[];
   lastUpdated: string; // ISO 8601

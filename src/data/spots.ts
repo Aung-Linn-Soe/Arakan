@@ -26,6 +26,7 @@ export const spots: Spot[] = [
       ja: "1535年に王ミンビンによって建立されたと伝わる。「8万体の仏像を祀る寺院」の意味を持つとされ、ミャウーで最も重要な寺院の一つ。",
     },
     photos: [],
+    wikipediaTitle: "Shite-thaung Temple", // Wikipedia側の表記ゆれ(Shittaung⇔Shite-thaung)を確認済み
     lastUpdated: "2026-06-01",
     sourceNote: "実在する史跡。建立年代・ビルマ語表記は文献により異なる場合があり要確認",
   },
@@ -46,6 +47,7 @@ export const spots: Spot[] = [
       ja: "1571年頃、王ミンパラウンによって建立されたとされる。要塞のような外観を持ちながら、内部は螺旋状の回廊に仏像が並ぶ授戒堂として使われた。",
     },
     photos: [],
+    wikipediaTitle: "Htukkanthein Temple",
     lastUpdated: "2026-06-01",
     sourceNote: "実在する史跡。建立年代・ビルマ語表記は文献により異なる場合があり要確認",
   },
@@ -66,6 +68,7 @@ export const spots: Spot[] = [
       ja: "1553年、ミンビン王の息子ミンタイッカ王によって建立されたと伝わる。シッタウン・パゴダより多い「9万体の仏像を祀る寺院」の意味を持つとされ、ミャウー最大級の単体寺院とされる。",
     },
     photos: [],
+    wikipediaTitle: "Koe-thaung Temple", // Wikipedia側の表記ゆれ(Koe Thaung⇔Koe-thaung)を確認済み
     lastUpdated: "2026-06-01",
     sourceNote: "実在する史跡。建立年代・ビルマ語表記は文献により異なる場合があり要確認",
   },
@@ -86,6 +89,7 @@ export const spots: Spot[] = [
       ja: "16世紀に建立されたと伝わり、仏舎利(仏の歯の遺骨)を祀っていると信じられている。「アンドー」は歯の遺骨を意味する語に由来するとされる。",
     },
     photos: [],
+    wikipediaTitle: "Andaw-thein Temple",
     lastUpdated: "2026-06-01",
     sourceNote: "実在する史跡。建立年代・由来の詳細は要確認",
   },
@@ -128,6 +132,7 @@ export const spots: Spot[] = [
       ja: "ミャンマーで最も知られたビーチリゾート。透明度の高い海と白い砂浜が広がる。",
     },
     photos: [],
+    wikipediaTitle: "Ngapali Beach",
     rating: 4.8,
     openingHours: ["終日 (サンプル)"],
     lastUpdated: "2026-07-10",
@@ -150,6 +155,7 @@ export const spots: Spot[] = [
       ja: "シットウェーの水辺にある、地元の人々にも人気の夕景スポット。",
     },
     photos: [],
+    wikipediaTitle: "Point, Sittwe", // 地元で"Point"と呼ばれる夕景公園。Wikipediaに記事あり
     lastUpdated: "2026-05-01",
     sourceNote: "地元で知られる夕景スポット。正式名称・座標は要確認",
   },
@@ -239,6 +245,26 @@ export const spots: Spot[] = [
     rating: 4.3,
     lastUpdated: "2026-03-30",
     sourceNote: "サンプルデータ — 店名・場所は要確認",
+  },
+  {
+    id: "s14",
+    slug: "maw-leik-mont-di",
+    category: "food",
+    name: {
+      my: "မော်လိပ် မုန့်တီ",
+      en: "Maw Leik Mont Di",
+      ja: "モーレイ・モンディー",
+    },
+    district: "Sittwe",
+    location: { lat: 20.1419, lng: 92.8992 },
+    description: {
+      my: "ရခိုင်ပြည်ယဉ်ကျေးမှုပြတိုက်ရှေ့၊ မော်လိပ်ရပ်ကွက်ရှိ ရခိုင်မုန့်တီ ဆိုင်။ ပုစွန်သားနှင့် ရေချိုးမုန့်တီအတွက် ကျော်ကြားသည်။",
+      en: "A Rakhine-style mont di (rice-noodle) shop in Sittwe's Maw Laik Ward, right in front of the Rakhine State Cultural Museum — named after both the neighborhood and the dish it serves. Known for its crab-topped mont di.",
+      ja: "シットウェーのマウレイ地区、ラカイン州文化博物館の目の前にあるラカイン風モンディー(米麺)の店。地区名と料理名を店名にしており、カニの身をのせたモンディーで知られる。",
+    },
+    photos: [],
+    lastUpdated: "2026-08-27",
+    sourceNote: "Web検索(foodpanda等)を基に住所を確認。座標は近隣のラカイン州文化博物館の位置で代用(要現地確認)。写真は未掲載 — 確認済みの直リンク可能な画像URLが判明次第追加予定",
   },
 
   // --- 工芸 ---

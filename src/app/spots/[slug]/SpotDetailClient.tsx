@@ -6,6 +6,7 @@ import { categoryLabelKey } from "@/i18n/dictionary";
 import { categoryColorVar } from "@/lib/categoryMeta";
 import RatingStars from "@/components/RatingStars";
 import SpotPhoto from "@/components/SpotPhoto";
+import { useWikipediaPhoto } from "@/lib/useWikipediaPhoto";
 import { Spot } from "@/types/spot";
 import styles from "./SpotDetailClient.module.css";
 
@@ -35,6 +36,11 @@ export default function SpotDetailClient({ spot }: { spot: Spot }) {
   const name = pick(spot.name);
   const description = pick(spot.description);
 
+  // spot.photosが未登録でも、Wikipediaにこのスポット固有の記事があれば
+  // その写真を優先して表示する(無ければ従来通りプレースホルダー)。
+  const wikiPhoto = useWikipediaPhoto(spot.wikipediaTitle);
+  const photos = spot.photos.length > 0 ? spot.photos : wikiPhoto ? [wikiPhoto] : spot.photos;
+
   return (
     <div className={styles.wrap}>
       <Link href="/" className={styles.backLink}>
@@ -42,7 +48,7 @@ export default function SpotDetailClient({ spot }: { spot: Spot }) {
       </Link>
 
       <div className={styles.photo}>
-        <SpotPhoto category={spot.category} photos={spot.photos} alt={name.value} />
+        <SpotPhoto category={spot.category} photos={photos} alt={name.value} />
       </div>
 
       <div className={styles.header}>

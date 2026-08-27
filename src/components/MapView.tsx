@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import { useEffect } from "react";
+import { MapContainer, TileLayer, Marker, Polygon, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import Link from "next/link";
@@ -9,37 +9,38 @@ import { useLocale } from "@/i18n/LocaleContext";
 import { categoryColorVar, categoryIcon } from "@/lib/categoryMeta";
 import { Spot } from "@/types/spot";
 import { GooglePlaceResult } from "@/types/googlePlace";
-import { RAKHINE_LATLNG_BOUNDS, RAKHINE_MAX_PAN_BOUNDS } from "@/lib/googlePlacesQuery";
+import { RAKHINE_LATLNG_BOUNDS } from "@/lib/googlePlacesQuery";
+import { rakhineOutlineRings } from "@/lib/rakhineBoundary";
 import styles from "./MapView.module.css";
 
+// ピンの内側は白にして絵文字アイコンをそのまま見せ、カテゴリーの色は
+// 枠線の方に持たせる。
 function buildSpotIcon(spot: Spot) {
   const html = `
-    <div class="${styles.marker}" style="background:${categoryColorVar[spot.category]}">
+    <div class="${styles.marker}" style="border-color:${categoryColorVar[spot.category]}">
       <span>${categoryIcon[spot.category]}</span>
-      ${spot.rating != null ? `<span>${spot.rating.toFixed(1)}</span>` : ""}
     </div>
   `;
   return L.divIcon({
     html,
     className: "", // leafletの既定スタイル(白背景の角丸)を打ち消す
     iconSize: undefined,
-    iconAnchor: [20, 14],
+    iconAnchor: [16, 16],
   });
 }
 
 // Google Places由来のピンは、掲載データと見分けられるよう外枠の色を変える
 function buildGoogleIcon(place: GooglePlaceResult) {
   const html = `
-    <div class="${styles.marker} ${styles.googleMarker}" style="background:${categoryColorVar[place.category]}">
+    <div class="${styles.marker} ${styles.googleMarker}">
       <span>${categoryIcon[place.category]}</span>
-      ${place.rating != null ? `<span>${place.rating.toFixed(1)}</span>` : ""}
     </div>
   `;
   return L.divIcon({
     html,
     className: "",
     iconSize: undefined,
-    iconAnchor: [20, 14],
+    iconAnchor: [16, 16],
   });
 }
 
@@ -54,28 +55,16 @@ function buildSearchIcon() {
   });
 }
 
-// リストでカードを選んだときに、地図をそのピンへ移動してポップアップを開くための補助コンポーネント。
+// リストでカードを選んだときに、地図をそのピンへ移動するための補助コンポーネント。
 // react-leafletのMapContainerの外からは地図インスタンスを操作できないため、
 // useMap()で取得したインスタンスをここで直接操作する。
-function FlyToFocusedPlace({
-  focusPlace,
-  markerRefs,
-}: {
-  focusPlace?: { id: string; lat: number; lng: number };
-  markerRefs: React.RefObject<Record<string, L.Marker | null>>;
-}) {
+function FlyToFocusedPlace({ focusPlace }: { focusPlace?: { id: string; lat: number; lng: number } }) {
   const map = useMap();
 
   useEffect(() => {
     if (!focusPlace) return;
     map.flyTo([focusPlace.lat, focusPlace.lng], Math.max(map.getZoom(), 13));
-    // 地図の移動が終わってからポップアップを開く(移動中に開くと位置がずれる)
-    const openPopup = () => markerRefs.current[focusPlace.id]?.openPopup();
-    map.once("moveend", openPopup);
-    return () => {
-      map.off("moveend", openPopup);
-    };
-  }, [focusPlace, map, markerRefs]);
+  }, [focusPlace, map]);
 
   return null;
 }
@@ -109,22 +98,28 @@ export default function MapView({
   searchResult,
 }: Props) {
   const { t, pick } = useLocale();
-  const googleMarkerRefs = useRef<Record<string, L.Marker | null>>({});
 
   return (
     <div className={styles.mapWrap}>
       <MapContainer
         bounds={RAKHINE_LATLNG_BOUNDS}
-        maxBounds={RAKHINE_MAX_PAN_BOUNDS}
-        maxBoundsViscosity={1.0}
         style={{ width: "100%", height: "100%" }}
         scrollWheelZoom
       >
+        {/* OpenStreetMap標準タイル。APIキー不要・無料で利用できる。
+            (CARTO Positronタイルは現在APIキーが必須になり「API KEY REQUIRED」の
+            透かしが出てしまうため、キー不要なOSM標準タイルに変更) */}
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; OpenStreetMap contributors'
         />
-        <FlyToFocusedPlace focusPlace={focusPlace} markerRefs={googleMarkerRefs} />
+        {/* ラカイン州の境界線(目印として表示するだけで、パン/ズームは制限しない)。 */}
+        <Polygon
+          positions={rakhineOutlineRings}
+          pathOptions={{ fill: false, className: styles.stateOutline, weight: 1.5 }}
+          interactive={false}
+        />
+        <FlyToFocusedPlace focusPlace={focusPlace} />
         <FlyToSearchResult point={searchResult} />
         {searchResult && (
           <Marker position={[searchResult.lat, searchResult.lng]} icon={buildSearchIcon()}>
@@ -141,7 +136,7 @@ export default function MapView({
               position={[spot.location.lat, spot.location.lng]}
               icon={buildSpotIcon(spot)}
             >
-              <Popup className={styles.popup}>
+              <Popup className={styles.popup} maxWidth={220}>
                 <div className={styles.popupName}>{name.value}</div>
                 <div className={styles.popupMeta}>{spot.district}</div>
                 <Link href={`/spots/${spot.slug}`} className={styles.popupLink}>
@@ -152,42 +147,18 @@ export default function MapView({
           );
         })}
 
+        {/* ポップアップは出さない(ピンや近くの他のピンを覆って隠してしまうため)。
+            クリックしたら選択状態にするだけで、詳細は地図の下のSelectedPlaceDetail
+            パネルに表示する。 */}
         {googlePlaces.map((place) => (
           <Marker
             key={`g-${place.id}`}
             position={[place.lat, place.lng]}
             icon={buildGoogleIcon(place)}
-            ref={(instance) => {
-              googleMarkerRefs.current[place.id] = instance;
-            }}
             eventHandlers={{
               click: () => onSelectGooglePlace?.(place.id),
             }}
-          >
-            <Popup className={styles.popup}>
-              <div className={styles.popupName}>{place.name}</div>
-              {(place.summary || place.formattedAddress) && (
-                <div className={styles.popupMeta}>{place.summary || place.formattedAddress}</div>
-              )}
-              {place.rating != null && (
-                <div className={styles.popupMeta}>
-                  ★ {place.rating.toFixed(1)}
-                  {place.userRatingCount != null ? ` (${place.userRatingCount})` : ""}
-                </div>
-              )}
-              {place.mapsUri && (
-                <a
-                  href={place.mapsUri}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={styles.popupLink}
-                >
-                  {t("openInGoogleMaps")} →
-                </a>
-              )}
-              <div className={styles.popupAttribution}>{t("googleAttribution")}</div>
-            </Popup>
-          </Marker>
+          />
         ))}
       </MapContainer>
     </div>

@@ -41,3 +41,8 @@
     max-height: 420px;
   }
 }
+
+/* Foodタブ(料理紹介)は位置情報に基づかないので地図無しでフルwidth表示する。 */
+.foodSection {
+  margin: 0 16px 16px;
+}

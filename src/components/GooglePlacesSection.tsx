@@ -24,6 +24,11 @@ export default function GooglePlacesSection({ category, state, selectedId, onSel
 
   return (
     <div className={styles.section}>
+      <div className={styles.heading}>
+        <span className={styles.headingTitle}>{t("googleResultsHeading")}</span>
+        <span className={styles.attribution}>{t("googleAttribution")}</span>
+      </div>
+
       {state.status === "loading" && <p className={styles.status}>{t("googleLoading")}</p>}
 
       {state.status === "error" && <p className={styles.status}>⚠ {t("googleError")}: {state.message}</p>}
@@ -32,47 +37,50 @@ export default function GooglePlacesSection({ category, state, selectedId, onSel
         <p className={styles.status}>{t("googleNoResults")}</p>
       )}
 
-      {state.status === "ready" &&
-        state.results.map((place) => (
-          <div
-            key={place.id}
-            className={`${styles.card} ${selectedId === place.id ? styles.cardActive : ""}`}
-            role="button"
-            tabIndex={0}
-            onClick={() => onSelect?.(place.id)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                onSelect?.(place.id);
-              }
-            }}
-          >
-            <div className={styles.photoWrap}>
-              {place.photoUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={place.photoUrl} alt={place.name} className={styles.photo} />
-              ) : (
-                <div className={styles.photoFallback}>{categoryIcon[category]}</div>
-              )}
+      {state.status === "ready" && state.results.length > 0 && (
+        <div className={styles.cardGrid}>
+          {state.results.map((place) => (
+            <div
+              key={place.id}
+              className={`${styles.card} ${selectedId === place.id ? styles.cardActive : ""}`}
+              role="button"
+              tabIndex={0}
+              onClick={() => onSelect?.(place.id)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  onSelect?.(place.id);
+                }
+              }}
+            >
+              <div className={styles.photoWrap}>
+                {place.photoUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={place.photoUrl} alt={place.name} className={styles.photo} />
+                ) : (
+                  <div className={styles.photoFallback}>{categoryIcon[category]}</div>
+                )}
+              </div>
+              <div className={styles.body}>
+                <div className={styles.name}>{place.name}</div>
+                {place.formattedAddress && (
+                  <p className={styles.address}>{place.summary || place.formattedAddress}</p>
+                )}
+                {place.mapsUri && (
+                  <a
+                    href={place.mapsUri}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={styles.mapsLink}
+                  >
+                    {t("openInGoogleMaps")} →
+                  </a>
+                )}
+              </div>
             </div>
-            <div className={styles.body}>
-              <div className={styles.name}>{place.name}</div>
-              {place.formattedAddress && (
-                <p className={styles.address}>{place.summary || place.formattedAddress}</p>
-              )}
-              {place.mapsUri && (
-                <a
-                  href={place.mapsUri}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={styles.mapsLink}
-                >
-                  {t("openInGoogleMaps")} →
-                </a>
-              )}
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
+      )}
     </div>
   );
 }
