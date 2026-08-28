@@ -12,7 +12,7 @@ const TABS = [
   { href: "/", icon: "🏠", labelKey: "navHome" },
   { href: "/map", icon: "🗺️", labelKey: "navMap" },
   { href: "/post", icon: "➕", labelKey: "newPost" },
-  { href: "/login", icon: "👤", labelKey: "navAccount" },
+  { href: "/account", icon: "👤", labelKey: "navAccount" },
 ] as const;
 
 export default function BottomNav() {

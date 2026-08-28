@@ -5,10 +5,12 @@ import { spots } from "@/data/spots";
 import { useLocale } from "@/i18n/LocaleContext";
 import { useFilteredSpots } from "@/lib/useFilteredSpots";
 import { useGooglePlaces } from "@/lib/useGooglePlaces";
+import { useUserSpots } from "@/lib/useUserSpots";
 import { GeocodeResult } from "@/lib/useGeocodeSearch";
 import SearchBox from "@/components/SearchBox";
 import CategoryFilter from "@/components/CategoryFilter";
 import GooglePlacesSection from "@/components/GooglePlacesSection";
+import CommunitySpotList from "@/components/CommunitySpotList";
 import FoodHero from "@/components/FoodHero";
 import DishList from "@/components/DishList";
 import TraditionalList from "@/components/TraditionalList";
@@ -49,6 +51,10 @@ export default function HomePage() {
   // 検索バーで地名検索(Nominatim)を選んだ結果。
   const [searchResult, setSearchResult] = useState<GeocodeResult | null>(null);
 
+  // Wikipedia/キュレーション済みデータに無い寺院・ビーチをユーザーが投稿できる機能。
+  // 位置はテキストのみ(緯度経度なし)なので地図には出さず、下のテキスト一覧に表示する。
+  const { posts: userSpotPosts } = useUserSpots(category);
+
   return (
     <div>
       {/* Foodタブは専用のFoodHeroを持つため、汎用の見出しは他タブでのみ出す。 */}
@@ -81,7 +87,11 @@ export default function HomePage() {
               /places/[id]の専用詳細ページへ遷移する(/spots/[slug]と同じ設計)。 */}
           {ENABLE_GOOGLE_PLACES && <GooglePlacesSection category={category} state={googleState} />}
 
-          {filtered.length === 0 && (
+          {/* Wikipedia/キュレーション済みデータに無い寺院・ビーチのユーザー投稿
+              (位置はテキストのみのため地図には出せない)。 */}
+          <CommunitySpotList posts={userSpotPosts} />
+
+          {filtered.length === 0 && userSpotPosts.length === 0 && (
             <p style={{ textAlign: "center", color: "var(--color-text-muted)", padding: 24 }}>
               {t("noResults")}
             </p>

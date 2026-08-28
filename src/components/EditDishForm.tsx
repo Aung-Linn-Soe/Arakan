@@ -5,6 +5,7 @@ import { useLocale } from "@/i18n/LocaleContext";
 import { useAuth } from "@/i18n/AuthContext";
 import { errorMessage } from "@/lib/errorMessage";
 import { MAX_IMAGES } from "@/lib/postConstants";
+import { uploadImages } from "@/lib/uploadImage";
 import styles from "./EditDishForm.module.css";
 
 type Post = {
@@ -46,16 +47,7 @@ export default function EditDishForm({ dish, onCancel, onSaved }: Props) {
     setError(null);
     setSaving(true);
     try {
-      const uploadedUrls: string[] = [];
-      for (const [i, file] of newFiles.entries()) {
-        const extMatch = file.name.match(/\.[a-zA-Z0-9]+$/);
-        const ext = extMatch ? extMatch[0] : "";
-        const path = `${user.id}/${Date.now()}-${i}${ext}`;
-        const { error: uploadError } = await supabase.storage.from("post-images").upload(path, file);
-        if (uploadError) throw uploadError;
-        uploadedUrls.push(supabase.storage.from("post-images").getPublicUrl(path).data.publicUrl);
-      }
-
+      const uploadedUrls = await uploadImages(supabase, user.id, newFiles);
       const finalUrls = [...existingUrls, ...uploadedUrls].slice(0, MAX_IMAGES);
       const { error: updateError } = await supabase
         .from("user_posts")

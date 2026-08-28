@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { useLocale } from "@/i18n/LocaleContext";
 import { categoryColorVar } from "@/lib/categoryMeta";
+import { spotHref } from "@/lib/spotHref";
 import { Spot } from "@/types/spot";
 import styles from "./SpotListRow.module.css";
 
@@ -17,7 +18,7 @@ export default function SpotListRow({ spot }: Props) {
   const color = categoryColorVar[spot.category];
 
   return (
-    <Link href={`/spots/${spot.slug}`} className={styles.row}>
+    <Link href={spotHref(spot)} className={styles.row}>
       <div className={styles.avatar} style={{ background: color }} aria-hidden="true">
         {spot.name.my.charAt(0)}
       </div>

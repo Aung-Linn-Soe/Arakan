@@ -7,6 +7,7 @@ import { categoryColorVar, categoryIcon } from "@/lib/categoryMeta";
 import { rakhineOutlineRings } from "@/lib/rakhineBoundary";
 import { createProjector, ringToPath } from "@/lib/mapProjection";
 import { measureTextWidth } from "@/lib/measureText";
+import { spotHref } from "@/lib/spotHref";
 import { Spot } from "@/types/spot";
 import { GooglePlaceResult } from "@/types/googlePlace";
 import styles from "./RakhineIllustrationMap.module.css";
@@ -85,7 +86,7 @@ export default function RakhineIllustrationMap({
         color: categoryColorVar[spot.category],
         icon: categoryIcon[spot.category],
         rating: spot.rating,
-        href: `/spots/${spot.slug}`,
+        href: spotHref(spot),
         highlighted: focusSpotSlug === spot.slug,
       };
     });

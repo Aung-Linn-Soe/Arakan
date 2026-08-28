@@ -1,0 +1,143 @@
+.wrap {
+  padding-bottom: 24px;
+}
+
+.status {
+  padding: 24px 16px;
+  text-align: center;
+  color: var(--color-text-muted);
+}
+
+.pageHeading {
+  padding: 16px 16px 0;
+}
+
+.stateLabel {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: 2px;
+}
+
+.pageTitle {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.backLink {
+  display: inline-block;
+  padding: 12px 16px 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.photo {
+  margin: 12px 16px;
+  height: 220px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.photoImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.photoPlaceholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary-contrast);
+  font-size: 40px;
+}
+
+.header {
+  padding: 0 16px;
+}
+
+.titleRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.name {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.ownerActions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.editButton,
+.deleteButton {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  padding: 4px 8px;
+}
+
+.deleteButton:disabled {
+  opacity: 0.6;
+}
+
+.metaRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.tag {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid;
+  background: var(--color-surface-raised);
+}
+
+.sourceTag {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  background: var(--color-surface-raised);
+}
+
+.section {
+  margin: 18px 16px 0;
+}
+
+.sectionTitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 6px;
+}
+
+.description {
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.coords {
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
