@@ -30,81 +30,89 @@
   padding: 40px 0;
 }
 
-/* 名物料理を一覧で見渡せるよう、画面幅に応じて複数列に並べるグリッド。
-   画面が狭いときは自動的に1列に折り返す。 */
+/* モックアップ準拠: 丸いアバター+番号+名前 / 説明文、を区切り線で並べる縦一列。 */
 .grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .card {
-  border-radius: var(--radius-lg);
-  background: var(--color-surface);
-  box-shadow: var(--shadow-card);
-  border: 1px solid var(--color-border);
-  overflow: hidden;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.card:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.headRow {
   display: flex;
-  flex-direction: column;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  gap: 16px;
+  margin-bottom: 10px;
 }
 
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 24px rgba(43, 32, 19, 0.18);
-}
-
-/* 一番おいしそうに見える1枚を大きく見せる「ヒーロー画像」(沖縄物語のグルメページを
-   参考に、写真を主役にした特集記事っぽい見た目にする)。
-   複数枚あってもここでは1枚だけにして、枚数バッジ経由でライトボックスから全部見せる。 */
-.photoHero {
+.avatarWrap {
   position: relative;
-  cursor: pointer;
+  flex-shrink: 0;
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
   overflow: hidden;
+  cursor: pointer;
+  background: var(--color-surface-raised);
 }
 
-.photoHeroImage {
+.avatarPhoto {
   width: 100%;
-  height: 230px;
+  height: 100%;
   object-fit: cover;
   display: block;
-  background: var(--color-surface-raised);
-  transition: transform 0.35s ease;
 }
 
-.photoHero:hover .photoHeroImage {
-  transform: scale(1.05);
-}
-
-/* 写真が無い投稿用のプレースホルダー(他のカードと並んでも寂しく見えないように)。 */
-.photoPlaceholder {
-  height: 230px;
+/* 写真がまだ無い投稿用のプレースホルダー(他のスポット系一覧の頭文字アバターと同じ考え方)。 */
+.avatarPlaceholder {
+  flex-shrink: 0;
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 56px;
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--color-primary-contrast);
   background: var(--color-food);
-  opacity: 0.85;
 }
 
 .photoCount {
   position: absolute;
-  right: 10px;
-  bottom: 10px;
+  right: 0;
+  bottom: 0;
   background: rgba(0, 0, 0, 0.55);
   color: #fff;
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 600;
-  padding: 4px 10px;
+  padding: 2px 6px;
   border-radius: 999px;
-  backdrop-filter: blur(2px);
 }
 
-.body {
-  padding: 16px;
+.headBody {
   flex: 1;
-  display: flex;
-  flex-direction: column;
+  min-width: 0;
+}
+
+.numberRow {
+  line-height: 1;
+}
+
+.number {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--color-food);
+  opacity: 0.45;
 }
 
 .titleRow {
@@ -112,13 +120,13 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 8px;
-  margin-bottom: 8px;
+  margin-top: -2px;
 }
 
 .title {
-  font-size: 20px;
-  font-weight: 800;
-  letter-spacing: -0.01em;
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 700;
 }
 
 .ownerActions {
@@ -148,27 +156,20 @@
 .description {
   font-size: 14px;
   line-height: 1.7;
-  color: var(--color-text-muted);
-  margin-bottom: 14px;
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical;
+  color: var(--color-text);
+  margin-bottom: 10px;
 }
 
 .findButton {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 10px 18px;
+  padding: 8px 16px;
   border-radius: 999px;
   background: var(--color-primary);
   color: var(--color-primary-contrast);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-  align-self: flex-start;
-  margin-top: auto;
 }
 
 .shopResults {

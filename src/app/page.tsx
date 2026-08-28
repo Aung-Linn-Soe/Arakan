@@ -9,6 +9,7 @@ import { GeocodeResult } from "@/lib/useGeocodeSearch";
 import SearchBox from "@/components/SearchBox";
 import CategoryFilter from "@/components/CategoryFilter";
 import GooglePlacesSection from "@/components/GooglePlacesSection";
+import FoodHero from "@/components/FoodHero";
 import DishList from "@/components/DishList";
 import TraditionalList from "@/components/TraditionalList";
 import RakhineIllustrationMap from "@/components/RakhineIllustrationMap";
@@ -50,15 +51,21 @@ export default function HomePage() {
 
   return (
     <div>
-      <PageHeading category={category} />
+      {/* Foodタブは専用のFoodHeroを持つため、汎用の見出しは他タブでのみ出す。 */}
+      {!isFoodCategory && <PageHeading category={category} />}
       <SearchBox value={query} onChange={setQuery} onSelectPlace={setSearchResult} />
       <CategoryFilter value={category} onChange={setCategory} />
 
       {/* Food/Traditionalタブは位置情報に基づく検索ではなく紹介コンテンツなので、地図は不要。 */}
       {isFoodCategory || isTraditionalCategory ? (
-        <div className={styles.foodSection}>
-          {isFoodCategory ? <DishList /> : <TraditionalList />}
-        </div>
+        <>
+          {/* FoodHeroは画面幅いっぱいのバナーなので、.foodSectionの左右余白の
+              外側(この位置)に置く。 */}
+          {isFoodCategory && <FoodHero />}
+          <div className={styles.foodSection}>
+            {isFoodCategory ? <DishList /> : <TraditionalList />}
+          </div>
+        </>
       ) : (
         <div className={styles.contentSection}>
           {/* ホームでは低い高さの静的プレビューのみ表示し、タップで/mapのフル機能

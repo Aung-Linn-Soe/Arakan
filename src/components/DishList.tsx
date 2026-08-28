@@ -20,7 +20,9 @@ type ShopState =
   | { status: "loading" }
   | { status: "ready"; shops: Post[] };
 
-// 料理紹介の投稿(category = 'dish')の一覧。
+// 料理紹介の投稿(category = 'dish')の一覧。丸いアバター(実際にアップロードされた
+// 写真、無ければ料理名の頭文字)+薄い色の番号+名前を横並びにし、その下に説明文を
+// 全幅で続ける(モックアップ準拠のカードレイアウト)。
 // 各投稿の「お店を探す」ボタンで、同じ料理名を含むお店投稿(category = 'food')を検索する
 // (厳密な紐付けではなく、まずはタイトル/説明のキーワード一致による簡易検索)。
 export default function DishList() {
@@ -82,8 +84,9 @@ export default function DishList() {
       {dishes.length === 0 && <p className={styles.empty}>{t("dishesEmpty")}</p>}
 
       <div className={styles.grid}>
-      {dishes.map((dish) => {
+      {dishes.map((dish, i) => {
         const shopState = shopStateByDish[dish.id] ?? { status: "idle" };
+        const hasPhoto = !!dish.image_urls && dish.image_urls.length > 0;
 
         if (editingId === dish.id) {
           return (
@@ -102,47 +105,55 @@ export default function DishList() {
 
         return (
           <div key={dish.id} className={styles.card}>
-            {dish.image_urls && dish.image_urls.length > 0 ? (
-              <div
-                className={styles.photoHero}
-                onClick={() => setLightbox({ dishId: dish.id, index: 0 })}
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={dish.image_urls[0]} alt={dish.title} className={styles.photoHeroImage} />
-                {dish.image_urls.length > 1 && (
-                  <span className={styles.photoCount}>📷 {dish.image_urls.length}</span>
-                )}
+            <div className={styles.headRow}>
+              {hasPhoto ? (
+                <div
+                  className={styles.avatarWrap}
+                  onClick={() => setLightbox({ dishId: dish.id, index: 0 })}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={dish.image_urls![0]} alt={dish.title} className={styles.avatarPhoto} />
+                  {dish.image_urls!.length > 1 && (
+                    <span className={styles.photoCount}>📷{dish.image_urls!.length}</span>
+                  )}
+                </div>
+              ) : (
+                // 写真がまだ無い投稿は、他のスポット系一覧と同じく頭文字のプレースホルダーにする。
+                <div className={styles.avatarPlaceholder} aria-hidden="true">
+                  {dish.title.charAt(0)}
+                </div>
+              )}
+
+              <div className={styles.headBody}>
+                <div className={styles.numberRow}>
+                  <span className={styles.number}>{String(i + 1).padStart(2, "0")}</span>
+                </div>
+                <div className={styles.titleRow}>
+                  <div className={styles.title}>{dish.title}</div>
+                  {user?.id === dish.user_id && (
+                    <div className={styles.ownerActions}>
+                      <button
+                        type="button"
+                        className={styles.editButton}
+                        onClick={() => setEditingId(dish.id)}
+                      >
+                        {t("editPost")}
+                      </button>
+                      <button
+                        type="button"
+                        className={styles.deleteButton}
+                        onClick={() => handleDelete(dish)}
+                        disabled={deletingId === dish.id}
+                      >
+                        {t("deletePost")}
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
-            ) : (
-              // 写真が無い投稿も、他のカードと並んだときに寂しく見えないよう
-              // プレースホルダーで同じ高さの「写真枠」を保つ。
-              <div className={styles.photoPlaceholder} aria-hidden="true">
-                🍜
-              </div>
-            )}
+            </div>
+
             <div className={styles.body}>
-              <div className={styles.titleRow}>
-                <div className={styles.title}>{dish.title}</div>
-                {user?.id === dish.user_id && (
-                  <div className={styles.ownerActions}>
-                    <button
-                      type="button"
-                      className={styles.editButton}
-                      onClick={() => setEditingId(dish.id)}
-                    >
-                      {t("editPost")}
-                    </button>
-                    <button
-                      type="button"
-                      className={styles.deleteButton}
-                      onClick={() => handleDelete(dish)}
-                      disabled={deletingId === dish.id}
-                    >
-                      {t("deletePost")}
-                    </button>
-                  </div>
-                )}
-              </div>
               {dish.description && <p className={styles.description}>{dish.description}</p>}
 
               {shopState.status !== "ready" && (
