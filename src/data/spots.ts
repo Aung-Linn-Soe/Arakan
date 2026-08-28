@@ -267,49 +267,12 @@ export const spots: Spot[] = [
     sourceNote: "Web検索(foodpanda等)を基に住所を確認。座標は近隣のラカイン州文化博物館の位置で代用(要現地確認)。写真は未掲載 — 確認済みの直リンク可能な画像URLが判明次第追加予定",
   },
 
-  // --- 工芸 ---
-  {
-    id: "s12",
-    slug: "rakhine-weaving-workshop",
-    category: "craft",
-    name: {
-      my: "ရခိုင် ရိုးရာ ယက်လက်မှု ဆိုင်ရာ",
-      en: "Traditional Rakhine Weaving Workshop",
-      ja: "ラカイン伝統織物工房",
-    },
-    district: "Mrauk-U",
-    location: { lat: 20.6050, lng: 93.2020 },
-    description: {
-      my: "ရခိုင်ရိုးရာ အထည်ယက်နည်းကို လက်ဆင့်ကမ်းထားသော အလုပ်ရုံငယ်။",
-      en: "A small workshop preserving traditional Rakhine handloom weaving techniques.",
-      ja: "ラカイン伝統の手織り技術を継承する小さな工房。",
-    },
-    photos: [],
-    rating: 4.0,
-    lastUpdated: "2026-02-12",
-    sourceNote: "サンプルデータ — 実在店舗の特定情報ではありません",
-  },
-  {
-    id: "s13",
-    slug: "lacquerware-silverwork-studio",
-    category: "craft",
-    name: {
-      my: "ကြေးမောင်း၊ ငွေပန်းထိမ် လက်မှုပညာ",
-      en: "Lacquerware & Silverwork Studio",
-      ja: "漆器・銀細工スタジオ",
-    },
-    district: "Sittwe",
-    location: { lat: 20.1400, lng: 92.9100 },
-    description: {
-      my: "ရခိုင့်ရိုးရာ ကြေးမောင်းနှင့် ငွေပန်းထိမ်လက်မှုပညာများကို ပြသသည်။",
-      en: "Showcases traditional Rakhine lacquerware and silversmithing craftsmanship.",
-      ja: "ラカインの伝統的な漆器・銀細工の技術を紹介するスタジオ。",
-    },
-    photos: [],
-    rating: 4.2,
-    lastUpdated: "2026-01-25",
-    sourceNote: "サンプルデータ — 実在店舗の特定情報ではありません",
-  },
+  // 注意: "craft"(工芸)はSpotのカテゴリーとしては廃止済み。
+  // かつてここにあった機織り工房・漆器/銀細工工房のサンプルデータは、
+  // 「工房・お店の検索」ではなく「ラカインを象徴する伝統的な物の紹介」として
+  // src/data/traditionalItems.ts (Traditionalタブ) に移植した。
+  // 新たに category: "craft" のSpotを追加しないこと(内部IDのcraftはTraditional
+  // タブのタブIDとしてのみ残っている。仕様書§3参照)。
 ];
 
 export function getSpotBySlug(slug: string): Spot | undefined {

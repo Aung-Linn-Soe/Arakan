@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useLocale } from "@/i18n/LocaleContext";
 import { categoryIcon } from "@/lib/categoryMeta";
 import { GooglePlacesState } from "@/lib/useGooglePlaces";
@@ -9,15 +10,14 @@ import styles from "./GooglePlacesSection.module.css";
 type Props = {
   category: Category;
   state: GooglePlacesState;
-  selectedId?: string | null;
-  onSelect?: (id: string) => void;
 };
 
 // カテゴリー選択時のGoogle Places検索結果をカードで表示するセクション。
 // fetch自体はページ側で1回だけ行い(地図のピンとも共有するため)、
 // このコンポーネントは結果を受け取って表示するだけの見た目担当。
-// カードをクリックすると地図側のピンと連動する(onSelect)。
-export default function GooglePlacesSection({ category, state, selectedId, onSelect }: Props) {
+// カードをタップすると、その場でプレビューを出さず直接専用の詳細ページ
+// (/places/[id])へ遷移する(/spots/[slug]と同じ「直接遷移」の設計に統一)。
+export default function GooglePlacesSection({ category, state }: Props) {
   const { t } = useLocale();
 
   if (state.status === "idle") return null;
@@ -40,18 +40,10 @@ export default function GooglePlacesSection({ category, state, selectedId, onSel
       {state.status === "ready" && state.results.length > 0 && (
         <div className={styles.cardGrid}>
           {state.results.map((place) => (
-            <div
+            <Link
               key={place.id}
-              className={`${styles.card} ${selectedId === place.id ? styles.cardActive : ""}`}
-              role="button"
-              tabIndex={0}
-              onClick={() => onSelect?.(place.id)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  onSelect?.(place.id);
-                }
-              }}
+              href={`/places/${encodeURIComponent(place.id)}?category=${category}`}
+              className={styles.card}
             >
               <div className={styles.photoWrap}>
                 {place.photoUrl ? (
@@ -66,18 +58,8 @@ export default function GooglePlacesSection({ category, state, selectedId, onSel
                 {place.formattedAddress && (
                   <p className={styles.address}>{place.summary || place.formattedAddress}</p>
                 )}
-                {place.mapsUri && (
-                  <a
-                    href={place.mapsUri}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={styles.mapsLink}
-                  >
-                    {t("openInGoogleMaps")} →
-                  </a>
-                )}
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       )}

@@ -1,0 +1,87 @@
+.wrap {
+  width: 100%;
+  height: clamp(420px, 70vh, 720px);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ホーム画面のプレビュー表示: モックアップに合わせた低い高さの静的サムネイル。 */
+.wrap.compact {
+  height: 160px;
+}
+
+.compactLink {
+  display: block;
+  cursor: pointer;
+}
+
+.svg {
+  width: 100%;
+  height: 100%;
+}
+
+.land {
+  fill: var(--color-surface-raised);
+  stroke: var(--color-primary);
+  stroke-width: 2.5;
+  stroke-opacity: 0.6;
+  stroke-linejoin: round;
+}
+
+.icon {
+  font-size: 10px;
+  text-anchor: middle;
+  dominant-baseline: central;
+  pointer-events: none;
+  user-select: none;
+}
+
+.dot {
+  stroke: var(--color-primary-contrast);
+  stroke-width: 1.5;
+}
+
+.highlightRing {
+  fill: none;
+  stroke: #4285f4;
+  stroke-width: 2;
+  opacity: 0.5;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 700;
+  paint-order: stroke;
+  stroke: var(--color-surface);
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.markerLink {
+  cursor: pointer;
+}
+
+.searchDot {
+  fill: #333;
+  stroke: var(--color-primary-contrast);
+  stroke-width: 1.5;
+}
+
+.searchLabel {
+  font-size: 12px;
+  font-weight: 700;
+  fill: var(--color-text);
+  paint-order: stroke;
+  stroke: var(--color-surface);
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}

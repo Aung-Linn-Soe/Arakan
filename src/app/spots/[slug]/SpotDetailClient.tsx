@@ -6,7 +6,9 @@ import { categoryLabelKey } from "@/i18n/dictionary";
 import { categoryColorVar } from "@/lib/categoryMeta";
 import RatingStars from "@/components/RatingStars";
 import SpotPhoto from "@/components/SpotPhoto";
+import RakhineIllustrationMap from "@/components/RakhineIllustrationMap";
 import { useWikipediaPhoto } from "@/lib/useWikipediaPhoto";
+import { spots } from "@/data/spots";
 import { Spot } from "@/types/spot";
 import styles from "./SpotDetailClient.module.css";
 
@@ -35,30 +37,52 @@ export default function SpotDetailClient({ spot }: { spot: Spot }) {
   const { locale, t, pick } = useLocale();
   const name = pick(spot.name);
   const description = pick(spot.description);
+  const color = categoryColorVar[spot.category];
 
   // spot.photosが未登録でも、Wikipediaにこのスポット固有の記事があれば
   // その写真を優先して表示する(無ければ従来通りプレースホルダー)。
   const wikiPhoto = useWikipediaPhoto(spot.wikipediaTitle);
   const photos = spot.photos.length > 0 ? spot.photos : wikiPhoto ? [wikiPhoto] : spot.photos;
+  const hasPhoto = photos.length > 0;
+
+  // 「近くのスポット」は、まず同じカテゴリーのスポットから選ぶ
+  // (同じ地区(例: Mrauk-U)のものを優先する)。
+  const nearby = spots
+    .filter((s) => s.id !== spot.id && s.category === spot.category)
+    .sort((a, b) => (a.district === spot.district ? -1 : 0) - (b.district === spot.district ? -1 : 0))
+    .slice(0, 4);
+
+  // 位置セクションの地図は、/mapタブと同じtemple/coastの全スポットを背景に出し、
+  // このスポットだけ強調する(食・工芸カテゴリーなど地図に出ないものは自分自身を追加)。
+  const mapContextSpots = spots.filter(
+    (s) => s.category === "temple" || s.category === "coast" || s.id === spot.id,
+  );
 
   return (
     <div className={styles.wrap}>
+      <div className={styles.pageHeading}>
+        <div className={styles.stateLabel}>{t("splashStateLabel")}</div>
+        <h1 className={styles.pageTitle}>{t("spotDetailHeading")}</h1>
+      </div>
+
       <Link href="/" className={styles.backLink}>
         ← {t("backToList")}
       </Link>
 
       <div className={styles.photo}>
         <SpotPhoto category={spot.category} photos={photos} alt={name.value} />
+        {/* 実写真が無い場合は、誤った写真を出すより正直に「写真無し」を伝える
+            (仕様書§7の方針: プレースホルダー表示を優先)。 */}
+        {!hasPhoto && <p className={styles.noPhotoNote}>{t("noPhotoNote")}</p>}
       </div>
 
       <div className={styles.header}>
-        <div className={styles.categoryRow}>
-          <span className={styles.dot} style={{ background: categoryColorVar[spot.category] }} />
-          {t(categoryLabelKey[spot.category])}
-        </div>
-        <h1 className={styles.name}>{name.value}</h1>
+        <h2 className={styles.name}>{name.value}</h2>
+        {name.value !== spot.name.en && <p className={styles.nameEn}>{spot.name.en}</p>}
         <div className={styles.metaRow}>
-          <span>{spot.district}</span>
+          <span className={styles.tag} style={{ color, borderColor: color }}>
+            {t(categoryLabelKey[spot.category])}
+          </span>
           <RatingStars rating={spot.rating} />
         </div>
       </div>
@@ -89,9 +113,38 @@ export default function SpotDetailClient({ spot }: { spot: Spot }) {
 
       <p className={styles.freshness}>{freshnessLabel(spot.lastUpdated, locale)}</p>
 
-      <Link href="/" className={styles.mapLink}>
-        {t("viewOnMap")}
-      </Link>
+      <div className={styles.section}>
+        <div className={styles.sectionTitle}>{t("locationHeading")}</div>
+        <p className={styles.coords}>
+          {spot.district} · {spot.location.lat.toFixed(4)}, {spot.location.lng.toFixed(4)}
+        </p>
+        <div className={styles.miniMap}>
+          {/* 州全体の中でこのスポットがどこにあるかが分かるよう、地図タブと同じ
+              temple/coastの全スポットを背景に出しつつ、このスポットだけ強調する
+              (仕様書§5の「拡大縮小なし・州全体を一望」の方針は維持)。 */}
+          <RakhineIllustrationMap spots={mapContextSpots} focusSpotSlug={spot.slug} compact />
+        </div>
+      </div>
+
+      {nearby.length > 0 && (
+        <div className={styles.section}>
+          <div className={styles.sectionTitle}>{t("nearbySpotsHeading")}</div>
+          <div className={styles.nearbyRow}>
+            {nearby.map((n) => {
+              const nColor = categoryColorVar[n.category];
+              const nName = pick(n.name);
+              return (
+                <Link key={n.id} href={`/spots/${n.slug}`} className={styles.nearbyTile}>
+                  <div className={styles.nearbyAvatar} style={{ background: nColor }} aria-hidden="true">
+                    {n.name.my.charAt(0)}
+                  </div>
+                  <div className={styles.nearbyName}>{nName.value}</div>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

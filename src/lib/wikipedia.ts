@@ -32,17 +32,32 @@ async function searchTitleByName(query: string, lang: string): Promise<string | 
 }
 
 async function fetchSummaryByTitle(title: string, lang: string): Promise<WikipediaSummary | null> {
-  const res = await fetch(
-    `https://${lang}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`,
-  );
+  // REST の page/summary は導入部の最初の1文だけしか返さず物足りないため、
+  // Action API の exintro(導入部全体、通常2〜4段落)を使ってより詳しく表示する。
+  // extract・サムネイル・記事URLを1回のリクエストでまとめて取得する。
+  const url =
+    `https://${lang}.wikipedia.org/w/api.php?action=query&format=json&origin=*` +
+    `&prop=extracts%7Cpageimages%7Cinfo&exintro=1&explaintext=1&piprop=thumbnail&pithumbsize=500&inprop=url` +
+    `&titles=${encodeURIComponent(title)}`;
+  const res = await fetch(url);
   if (!res.ok) return null;
   const data = await res.json();
-  if (!data.extract) return null;
+  const page = Object.values(data?.query?.pages ?? {})[0] as
+    | {
+        title?: string;
+        extract?: string;
+        fullurl?: string;
+        thumbnail?: { source?: string };
+        missing?: string;
+      }
+    | undefined;
+  if (!page || page.missing !== undefined || !page.extract) return null;
+
   return {
-    title: data.title,
-    extract: data.extract,
-    url: data.content_urls?.desktop?.page ?? `https://${lang}.wikipedia.org/wiki/${encodeURIComponent(title)}`,
-    thumbnailUrl: data.thumbnail?.source,
+    title: page.title ?? title,
+    extract: page.extract,
+    url: page.fullurl ?? `https://${lang}.wikipedia.org/wiki/${encodeURIComponent(title)}`,
+    thumbnailUrl: page.thumbnail?.source,
   };
 }
 
