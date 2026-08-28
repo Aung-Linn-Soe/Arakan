@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useLocale } from "@/i18n/LocaleContext";
 import { useWikipediaPhoto } from "@/lib/useWikipediaPhoto";
+import { spotHref } from "@/lib/spotHref";
 import SpotPhoto from "@/components/SpotPhoto";
 import { Spot } from "@/types/spot";
 import styles from "./SpotCard.module.css";
@@ -23,7 +24,7 @@ export default function SpotCard({ spot }: Props) {
   const photos = spot.photos.length > 0 ? spot.photos : wikiPhoto ? [wikiPhoto] : spot.photos;
 
   return (
-    <Link href={`/spots/${spot.slug}`} className={styles.card}>
+    <Link href={spotHref(spot)} className={styles.card}>
       <div className={styles.photo}>
         <SpotPhoto category={spot.category} photos={photos} alt={name.value} />
       </div>

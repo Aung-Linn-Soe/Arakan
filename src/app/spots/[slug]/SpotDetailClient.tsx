@@ -8,6 +8,9 @@ import RatingStars from "@/components/RatingStars";
 import SpotPhoto from "@/components/SpotPhoto";
 import RakhineIllustrationMap from "@/components/RakhineIllustrationMap";
 import { useWikipediaPhoto } from "@/lib/useWikipediaPhoto";
+import { useSpotPhotos } from "@/lib/useSpotPhotos";
+import { spotHref } from "@/lib/spotHref";
+import SpotPhotoUpload from "./SpotPhotoUpload";
 import { spots } from "@/data/spots";
 import { Spot } from "@/types/spot";
 import styles from "./SpotDetailClient.module.css";
@@ -40,9 +43,19 @@ export default function SpotDetailClient({ spot }: { spot: Spot }) {
   const color = categoryColorVar[spot.category];
 
   // spot.photosが未登録でも、Wikipediaにこのスポット固有の記事があれば
-  // その写真を優先して表示する(無ければ従来通りプレースホルダー)。
+  // その写真を優先して表示する。Wikipediaにも無ければ、ユーザーが投稿した
+  // 実写真(spot_photos)にフォールバックし、それも無ければプレースホルダーになる。
   const wikiPhoto = useWikipediaPhoto(spot.wikipediaTitle);
-  const photos = spot.photos.length > 0 ? spot.photos : wikiPhoto ? [wikiPhoto] : spot.photos;
+  const { photos: userPhotos, refresh: refreshUserPhotos } = useSpotPhotos(spot.slug);
+  const userPhotoUrl = userPhotos?.[0]?.image_url;
+  const photos =
+    spot.photos.length > 0
+      ? spot.photos
+      : wikiPhoto
+        ? [wikiPhoto]
+        : userPhotoUrl
+          ? [userPhotoUrl]
+          : spot.photos;
   const hasPhoto = photos.length > 0;
 
   // 「近くのスポット」は、まず同じカテゴリーのスポットから選ぶ
@@ -75,6 +88,17 @@ export default function SpotDetailClient({ spot }: { spot: Spot }) {
             (仕様書§7の方針: プレースホルダー表示を優先)。 */}
         {!hasPhoto && <p className={styles.noPhotoNote}>{t("noPhotoNote")}</p>}
       </div>
+
+      {/* Wikipedia等でも写真が見つからなかった場合、ログインユーザーが実写真を
+          追加できるようにする(投稿されたらuseSpotPhotosを再取得して即反映)。 */}
+      {!hasPhoto && (
+        <SpotPhotoUpload
+          slug={spot.slug}
+          category={spot.category}
+          letter={spot.name.my.charAt(0)}
+          onUploaded={refreshUserPhotos}
+        />
+      )}
 
       <div className={styles.header}>
         <h2 className={styles.name}>{name.value}</h2>
@@ -134,7 +158,7 @@ export default function SpotDetailClient({ spot }: { spot: Spot }) {
               const nColor = categoryColorVar[n.category];
               const nName = pick(n.name);
               return (
-                <Link key={n.id} href={`/spots/${n.slug}`} className={styles.nearbyTile}>
+                <Link key={n.id} href={spotHref(n)} className={styles.nearbyTile}>
                   <div className={styles.nearbyAvatar} style={{ background: nColor }} aria-hidden="true">
                     {n.name.my.charAt(0)}
                   </div>

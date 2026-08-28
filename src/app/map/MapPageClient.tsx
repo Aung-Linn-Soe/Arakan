@@ -3,7 +3,9 @@
 import { useMemo, useState } from "react";
 import { spots } from "@/data/spots";
 import { useLocale } from "@/i18n/LocaleContext";
+import { useUserSpots } from "@/lib/useUserSpots";
 import RakhineIllustrationMap from "@/components/RakhineIllustrationMap";
+import CommunitySpotList from "@/components/CommunitySpotList";
 import SpotCard from "./SpotCard";
 import SpotListRow from "./SpotListRow";
 import styles from "./MapPageClient.module.css";
@@ -12,9 +14,11 @@ type View = "map" | "list";
 
 // ボトムナビの「地図」タブ用、フル機能の地図ページ。ホーム画面のコンパクトな
 // プレビューから遷移してくる先で、以前ホームで表示していたラベル付き・
-// クリック可能な地図をそのまま独立ページとして持つ。まずはキュレーション済み
+// クリック可能な地図をそのまま独立ページとして持つ。地図・カードはキュレーション済み
 // スポット(temple/coast)のみを対象にし、Google Places連携は含めない
 // (コスト・スコープを抑えるため)。
+// Wikipedia/キュレーション済みデータに無い寺院・ビーチのユーザー投稿は、位置が
+// テキストのみ(緯度経度なし)のため地図には出せず、下にテキスト一覧として加える。
 // 「地図/一覧」の切り替えのみ持ち、地図の下のカード・一覧行はどちらも
 // タップしたら直接詳細ページ(/spots/[slug])へ遷移する(中間プレビューは持たない)。
 export default function MapPageClient() {
@@ -25,6 +29,10 @@ export default function MapPageClient() {
     () => spots.filter((s) => s.category === "temple" || s.category === "coast"),
     [],
   );
+
+  const { posts: userTemplePosts } = useUserSpots("temple");
+  const { posts: userCoastPosts } = useUserSpots("coast");
+  const userSpotPosts = [...userTemplePosts, ...userCoastPosts];
 
   return (
     <div className={styles.wrap}>
@@ -63,6 +71,8 @@ export default function MapPageClient() {
               <SpotCard key={spot.id} spot={spot} />
             ))}
           </div>
+
+          <CommunitySpotList posts={userSpotPosts} />
         </>
       ) : (
         // 一覧タブ: 単純なリストで、タップしたらそのまま詳細ページへ遷移する。
@@ -70,6 +80,7 @@ export default function MapPageClient() {
           {mapSpots.map((spot) => (
             <SpotListRow key={spot.id} spot={spot} />
           ))}
+          <CommunitySpotList posts={userSpotPosts} />
         </div>
       )}
     </div>
