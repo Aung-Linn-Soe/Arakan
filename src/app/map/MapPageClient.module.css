@@ -1,0 +1,62 @@
+.wrap {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.stateLabel {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: -8px;
+}
+
+.heading {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.viewToggle {
+  display: flex;
+  gap: 8px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  padding: 4px;
+  width: fit-content;
+}
+
+.toggleButton {
+  padding: 8px 20px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text-muted);
+}
+
+.toggleActive {
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
+}
+
+.mapCaption {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  margin-top: -6px;
+}
+
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+/* 一覧タブ: 縦積みの行リスト(地図タブのカードグリッドとは別レイアウト)。 */
+.listCol {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}

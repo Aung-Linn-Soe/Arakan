@@ -23,6 +23,14 @@
   --font-sans: "Myanmar Text", "Noto Sans Myanmar", "Padauk", system-ui,
     -apple-system, "Segoe UI", "Hiragino Kaku Gothic ProN", "Yu Gothic",
     "Noto Sans JP", sans-serif;
+
+  /* 見出し専用のフォントスタック(ヒーロー・ハイライトなど「編集的な瞬間」用)。
+     新規フォントのダウンロードはせず、システムフォント内で本文と温度差を出す。 */
+  --font-display: Georgia, "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif Myanmar",
+    var(--font-sans);
+
+  --color-sea: #4a7a7c;
+  --color-sea-dark: #2e5254;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -35,6 +43,8 @@
     --color-text-muted: #c9b98f;
     --color-primary: #e08a4f;
     --color-primary-contrast: #201a12;
+    --color-sea: #3f6b6d;
+    --color-sea-dark: #274647;
     color-scheme: dark;
   }
 }
@@ -85,6 +95,14 @@ input {
   flex-direction: column;
   min-height: 100%;
   flex: 1;
+}
+
+/* BottomNav.module.cssと同じブレークポイントで、固定表示のボトムナビに
+   本文が隠れないよう余白を確保する。 */
+@media (max-width: 860px) {
+  #app-shell main {
+    padding-bottom: calc(64px + env(safe-area-inset-bottom));
+  }
 }
 
 .visually-hidden {

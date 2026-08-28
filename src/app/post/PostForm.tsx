@@ -13,19 +13,23 @@ import styles from "./PostForm.module.css";
 // react-leafletはブラウザAPIに依存するため、サーバー側でのレンダリングを無効化する。
 const LocationPicker = dynamic(() => import("@/components/LocationPicker"), { ssr: false });
 
-// ユーザー投稿の対象カテゴリー。"dish"(料理紹介)はSpotのCategory型には無い、
-// user_posts専用のカテゴリーで、お店ではなく料理そのものを紹介する投稿(位置は任意)。
-type PostCategory = "food" | "craft" | "dish";
-const POST_CATEGORIES: PostCategory[] = ["food", "craft", "dish"];
-// 位置(地図のピン)が必須なカテゴリー。dishは料理そのものの紹介なので任意。
+// ユーザー投稿の対象カテゴリー。"dish"(料理紹介)・"traditional"(伝統文化紹介)は
+// SpotのCategory型には無い、user_posts専用のカテゴリーで、お店ではなく
+// 料理/伝統的な物そのものを紹介する投稿(位置は任意)。
+// 旧"craft"(工房・お店投稿)は廃止済み — Traditionalタブは工房検索ではなく
+// 伝統的な物の紹介に一本化したため(DBのuser_posts_category_check制約も更新済み)。
+type PostCategory = "food" | "dish" | "traditional";
+const POST_CATEGORIES: PostCategory[] = ["food", "dish", "traditional"];
+// 位置(地図のピン)が必須なカテゴリー。dish/traditionalは物そのものの紹介なので任意。
 const LOCATION_REQUIRED: Record<PostCategory, boolean> = {
   food: true,
-  craft: true,
   dish: false,
+  traditional: false,
 };
 
 function categoryLabel(t: (key: string) => string, category: PostCategory): string {
   if (category === "dish") return t("postCategoryDish");
+  if (category === "traditional") return t("postCategoryTraditional");
   return t(categoryLabelKey[category]);
 }
 

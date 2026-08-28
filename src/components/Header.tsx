@@ -3,17 +3,11 @@
 import Link from "next/link";
 import { useLocale } from "@/i18n/LocaleContext";
 import { useAuth } from "@/i18n/AuthContext";
-import { Locale } from "@/types/spot";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import styles from "./Header.module.css";
 
-const LOCALES: { code: Locale; label: string }[] = [
-  { code: "my", label: "MY" },
-  { code: "en", label: "EN" },
-  { code: "ja", label: "JA" },
-];
-
 export default function Header() {
-  const { locale, setLocale, t } = useLocale();
+  const { t } = useLocale();
   const { user, loading, signOut } = useAuth();
 
   return (
@@ -24,19 +18,7 @@ export default function Header() {
         </div>
         <span className={styles.title}>{t("appName")}</span>
       </Link>
-      <div className={styles.langSwitch} role="group" aria-label={t("languageLabel")}>
-        {LOCALES.map(({ code, label }) => (
-          <button
-            key={code}
-            type="button"
-            className={`${styles.langButton} ${locale === code ? styles.active : ""}`}
-            aria-pressed={locale === code}
-            onClick={() => setLocale(code)}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
+      <LanguageSwitcher />
       <div className={styles.authArea}>
         {/* 「Rakhine dishes」の独立ページは廃止し、ホーム画面のFoodタブに統合した
             (料理そのものの紹介はそこで見られる)。 */}

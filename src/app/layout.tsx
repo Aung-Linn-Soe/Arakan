@@ -1,8 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { LocaleProvider } from "@/i18n/LocaleContext";
 import { AuthProvider } from "@/i18n/AuthContext";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import AppShell from "@/components/AppShell";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import "./globals.css";
 
@@ -24,11 +23,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body>
         <LocaleProvider>
           <AuthProvider>
-            <div id="app-shell">
-              <Header />
-              <main style={{ flex: 1 }}>{children}</main>
-              <Footer />
-            </div>
+            <AppShell>{children}</AppShell>
           </AuthProvider>
         </LocaleProvider>
         <ServiceWorkerRegister />
